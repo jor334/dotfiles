@@ -1,0 +1,21 @@
+#!/bin/bash
+# Centers the frontmost app's window at 60% width / 75% height of the screen.
+
+osascript <<'EOF'
+tell application "Finder" to set screenBounds to bounds of window of desktop
+set screenWidth to item 3 of screenBounds
+set screenHeight to item 4 of screenBounds
+
+set winWidth to screenWidth * 0.6
+set winHeight to screenHeight * 0.75
+set winX to (screenWidth - winWidth) / 2
+set winY to (screenHeight - winHeight) / 2
+
+tell application "System Events"
+    set frontApp to first application process whose frontmost is true
+    tell frontApp
+        set position of window 1 to {winX, winY}
+        set size of window 1 to {winWidth, winHeight}
+    end tell
+end tell
+EOF
