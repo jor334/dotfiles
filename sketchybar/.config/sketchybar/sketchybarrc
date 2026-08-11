@@ -110,8 +110,8 @@ sketchybar --add item space_separator left \
 # safety net for closed apps, which AeroSpace has no hook for.
 sketchybar --add event aerospace_refresh
 sketchybar --add item aerospace_controller left \
-  --set aerospace_controller drawing=off update_freq=5 script="$PLUGIN_DIR/aerospace.sh" \
-  --subscribe aerospace_controller aerospace_refresh
+  --set aerospace_controller drawing=off updates=on update_freq=5 script="$PLUGIN_DIR/aerospace.sh" \
+  --subscribe aerospace_controller aerospace_refresh front_app_switched
 
 ##### Front app (currently focused app's real icon + name) #####
 # Hidden while Brave is focused — Brave lives on a real macOS Space, not an
