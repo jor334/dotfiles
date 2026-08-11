@@ -5,7 +5,7 @@ source "$CONFIG_DIR/icons.sh"
 SSID="$(ipconfig getsummary en0 2>/dev/null | awk -F ' SSID : ' '/ SSID : / {print $2}')"
 
 if [ -n "$SSID" ]; then
-  sketchybar --set wifi icon="$WIFI" icon.color=$TEXT label="$SSID"
+  sketchybar --set wifi icon="$WIFI" icon.color=$TEXT
 else
-  sketchybar --set wifi icon="$WIFI" icon.color=$SUBTEXT label="Off"
+  sketchybar --set wifi icon="$WIFI" icon.color=$SUBTEXT
 fi

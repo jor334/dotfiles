@@ -58,16 +58,16 @@ for sid in $(aerospace list-workspaces --all); do
     --set space.$sid \
     icon="$sid" \
     icon.font="SF Pro:Bold:13.0" \
+    icon.padding_left=8 \
+    icon.padding_right=4 \
     label.drawing=off \
-    background.color=$SURFACE \
-    background.border_color=$SURFACE \
-    background.corner_radius=6 \
-    background.height=24 \
-    background.drawing=on \
+    padding_left=0 \
+    padding_right=0 \
     click_script="aerospace workspace $sid" \
     script="$PLUGIN_DIR/aerospace.sh $sid" \
     --subscribe space.$sid aerospace_workspace_change
 
+  bracket_members="space.$sid"
   for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
     # NOTE: icon.drawing must stay "on" — turning it off disables the whole
     # icon subsystem (text *and* background *and* image), not just the
@@ -78,14 +78,27 @@ for sid in $(aerospace list-workspaces --all); do
       icon="" \
       icon.background.drawing=on \
       icon.background.height=20 \
-      icon.background.corner_radius=4 \
-      icon.background.image.scale=0.7 \
-      icon.padding_left=1 \
-      icon.padding_right=1 \
+      icon.background.corner_radius=5 \
+      icon.background.image.scale=0.75 \
+      icon.padding_left=3 \
+      icon.padding_right=3 \
       label.drawing=off \
-      padding_left=1 \
-      padding_right=1
+      padding_left=0 \
+      padding_right=0
+    bracket_members="$bracket_members space.$sid.app.$slot"
   done
+
+  # Group the number + its app icons under one shared rounded background —
+  # a single "box" per workspace instead of separate floating pieces.
+  sketchybar --add bracket space_bracket.$sid $bracket_members \
+    --set space_bracket.$sid \
+    background.color=$SURFACE \
+    background.border_color=$SURFACE \
+    background.corner_radius=8 \
+    background.height=26 \
+    background.drawing=on \
+    padding_left=3 \
+    padding_right=3
 done
 
 sketchybar --add item space_separator left \
@@ -107,18 +120,14 @@ sketchybar --add item front_app left \
   label.font="SF Pro:Semibold:13.0" \
   --subscribe front_app front_app_switched
 
-# Populate front_app immediately on startup (front_app_switched only fires
-# on the *next* app focus change otherwise).
-current_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true')
-if [ "$current_app" = "Brave Browser" ]; then
-  sketchybar --set front_app drawing=off
-else
-  sketchybar --set front_app drawing=on label="$current_app" icon.background.image="app.$current_app"
-fi
+# Stay hidden until the first real front_app_switched event — querying the
+# frontmost app at LaunchAgent startup is unreliable (System Events can
+# report a stale/background process before the desktop session settles).
+sketchybar --set front_app drawing=off
 
 ##### Right side: wifi, volume, battery, clock #####
 sketchybar --add item wifi right \
-  --set wifi icon.font="$ICON_FONT:Regular:13.0" update_freq=15 script="$PLUGIN_DIR/wifi.sh"
+  --set wifi icon.font="$ICON_FONT:Regular:13.0" label.drawing=off update_freq=15 script="$PLUGIN_DIR/wifi.sh"
 
 sketchybar --add item volume right \
   --set volume icon.font="$ICON_FONT:Regular:13.0" script="$PLUGIN_DIR/volume.sh" \

@@ -1,9 +1,10 @@
 #!/bin/bash
-# Refreshes one or all AeroSpace workspace items: hides workspaces that have
-# no windows (ignoring Brave, which the user keeps on a real macOS Space,
-# not an AeroSpace workspace), shows a real icon per open app (up to
+# Refreshes one or all AeroSpace workspace boxes: hides the whole box
+# (number + app icons, grouped via a sketchybar bracket) when a workspace
+# has no windows — ignoring Brave, which the user keeps on a real macOS
+# Space, not an AeroSpace workspace — shows a real icon per open app (up to
 # MAX_APPS_PER_SPACE, pre-created as hidden placeholders in sketchybarrc),
-# and animates the highlight onto the currently focused workspace.
+# and animates the highlight onto the currently focused workspace's box.
 
 source "$CONFIG_DIR/colors.sh"
 
@@ -19,21 +20,22 @@ refresh_space() {
     | grep -v '^Brave Browser$' | awk '!seen[$0]++')
 
   if [ -z "$apps" ]; then
-    sketchybar --set space.$sid drawing=off
+    sketchybar --set space_bracket.$sid drawing=off
     for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
       sketchybar --set space.$sid.app.$slot drawing=off
     done
     return
   fi
 
+  sketchybar --set space_bracket.$sid drawing=on
   if [ "$sid" = "$focused" ]; then
-    sketchybar --set space.$sid drawing=on
-    sketchybar --animate tanh 20 --set space.$sid \
-      background.color=$MAUVE background.border_color=$MAUVE icon.color=$BASE
+    sketchybar --animate tanh 20 --set space_bracket.$sid \
+      background.color=$MAUVE background.border_color=$MAUVE
+    sketchybar --set space.$sid icon.color=$BASE
   else
-    sketchybar --set space.$sid drawing=on
-    sketchybar --animate tanh 20 --set space.$sid \
-      background.color=$SURFACE background.border_color=$SURFACE icon.color=$TEXT
+    sketchybar --animate tanh 20 --set space_bracket.$sid \
+      background.color=$SURFACE background.border_color=$SURFACE
+    sketchybar --set space.$sid icon.color=$TEXT
   fi
 
   while IFS= read -r app; do
