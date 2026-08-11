@@ -179,9 +179,3 @@ gaps.outer.right =      20
     alt-shift-j = ['join-with down', 'mode main']
     alt-shift-k = ['join-with up', 'mode main']
     alt-shift-l = ['join-with right', 'mode main']
-
-# Reglas: asignar apps a un workspace fijo apenas se abren
-# See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
-[[on-window-detected]]
-if.app-id = 'com.brave.Browser'
-run = 'move-node-to-workspace 1'
