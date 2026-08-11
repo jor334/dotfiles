@@ -1,2 +1,2 @@
 #!/bin/bash
-sketchybar --set clock label="$(date '+%a %d %b  %H:%M')"
+sketchybar --set clock icon.drawing=off label="$(date '+%a %d %b  %H:%M')"
