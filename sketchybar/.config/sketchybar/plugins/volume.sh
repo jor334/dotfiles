@@ -6,15 +6,11 @@ VOLUME="$(osascript -e 'output volume of (get volume settings)')"
 MUTED="$(osascript -e 'output muted of (get volume settings)')"
 
 if [ "$MUTED" = "true" ] || [ "$VOLUME" -eq 0 ]; then
-  ICON="$VOLUME_0"
-elif [ "$VOLUME" -lt 33 ]; then
-  ICON="$VOLUME_10"
-elif [ "$VOLUME" -lt 66 ]; then
-  ICON="$VOLUME_33"
-elif [ "$VOLUME" -lt 100 ]; then
-  ICON="$VOLUME_66"
+  ICON="$VOLUME_MUTE"
+elif [ "$VOLUME" -lt 50 ]; then
+  ICON="$VOLUME_LOW"
 else
-  ICON="$VOLUME_100"
+  ICON="$VOLUME_HIGH"
 fi
 
 sketchybar --set volume icon="$ICON" label="${VOLUME}%"
