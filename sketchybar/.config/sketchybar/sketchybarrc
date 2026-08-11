@@ -48,6 +48,11 @@ sketchybar --add item apple left \
 # highlighted with an animated background.
 sketchybar --add event aerospace_workspace_change
 
+# Max number of per-app icons shown inside each workspace pill. The items
+# are pre-created hidden and toggled on/off by aerospace.sh as windows come
+# and go, instead of being added/removed dynamically.
+MAX_APPS_PER_SPACE=4
+
 for sid in $(aerospace list-workspaces --all); do
   sketchybar --add item space.$sid left \
     --set space.$sid \
@@ -62,6 +67,22 @@ for sid in $(aerospace list-workspaces --all); do
     click_script="aerospace workspace $sid" \
     script="$PLUGIN_DIR/aerospace.sh $sid" \
     --subscribe space.$sid aerospace_workspace_change
+
+  for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
+    sketchybar --add item space.$sid.app.$slot left \
+      --set space.$sid.app.$slot \
+      drawing=off \
+      icon.drawing=off \
+      icon.background.drawing=on \
+      icon.background.height=20 \
+      icon.background.corner_radius=4 \
+      icon.background.image.scale=0.7 \
+      icon.padding_left=1 \
+      icon.padding_right=1 \
+      label.drawing=off \
+      padding_left=1 \
+      padding_right=1
+  done
 done
 
 sketchybar --add item space_separator left \
@@ -69,10 +90,14 @@ sketchybar --add item space_separator left \
   padding_left=6 padding_right=10
 
 ##### Front app (currently focused app's real icon + name) #####
+# Hidden while Brave is focused — Brave lives on a real macOS Space, not an
+# AeroSpace workspace, and shouldn't show up anywhere in this bar.
 sketchybar --add item front_app left \
   --set front_app \
   icon.drawing=off \
   icon.background.drawing=on \
+  icon.background.height=20 \
+  icon.background.corner_radius=4 \
   icon.background.image.scale=0.7 \
   icon.background.padding_left=2 \
   icon.background.padding_right=6 \
@@ -82,7 +107,11 @@ sketchybar --add item front_app left \
 # Populate front_app immediately on startup (front_app_switched only fires
 # on the *next* app focus change otherwise).
 current_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true')
-sketchybar --set front_app label="$current_app" icon.background.image="app.$current_app"
+if [ "$current_app" = "Brave Browser" ]; then
+  sketchybar --set front_app drawing=off
+else
+  sketchybar --set front_app drawing=on label="$current_app" icon.background.image="app.$current_app"
+fi
 
 ##### Right side: wifi, volume, battery, clock #####
 sketchybar --add item wifi right \
