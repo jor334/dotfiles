@@ -69,10 +69,13 @@ for sid in $(aerospace list-workspaces --all); do
     --subscribe space.$sid aerospace_workspace_change
 
   for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
+    # NOTE: icon.drawing must stay "on" — turning it off disables the whole
+    # icon subsystem (text *and* background *and* image), not just the
+    # glyph. We just leave the icon text empty instead.
     sketchybar --add item space.$sid.app.$slot left \
       --set space.$sid.app.$slot \
       drawing=off \
-      icon.drawing=off \
+      icon="" \
       icon.background.drawing=on \
       icon.background.height=20 \
       icon.background.corner_radius=4 \
@@ -94,7 +97,7 @@ sketchybar --add item space_separator left \
 # AeroSpace workspace, and shouldn't show up anywhere in this bar.
 sketchybar --add item front_app left \
   --set front_app \
-  icon.drawing=off \
+  icon="" \
   icon.background.drawing=on \
   icon.background.height=20 \
   icon.background.corner_radius=4 \
