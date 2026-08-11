@@ -108,6 +108,7 @@ sketchybar --add item space_separator left \
 # workspace box in one atomic pass. Triggered by AeroSpace hooks (workspace
 # switch, new window) — see .aerospace.toml — plus a periodic poll as a
 # safety net for closed apps, which AeroSpace has no hook for.
+sketchybar --add event aerospace_refresh
 sketchybar --add item aerospace_controller left \
   --set aerospace_controller drawing=off update_freq=5 script="$PLUGIN_DIR/aerospace.sh" \
   --subscribe aerospace_controller aerospace_refresh
