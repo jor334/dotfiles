@@ -10,10 +10,9 @@ config-version = 2
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = []
 
-# Refresh only the two SketchyBar workspace boxes that actually changed
-# (the one we left, the one we entered) instead of broadcasting to all
-# nine — keeps the highlight animation smooth.
-exec-on-workspace-change = ['/bin/bash', '-c', '$HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_PREV_WORKSPACE & $HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_FOCUSED_WORKSPACE & wait']
+# Ask SketchyBar's hidden aerospace_controller item to refresh every
+# workspace box from one consistent snapshot of AeroSpace's state.
+exec-on-workspace-change = ['/bin/bash', '-c', 'sketchybar --trigger aerospace_refresh']
 
 # Start AeroSpace at login
 start-at-login = false
@@ -185,10 +184,10 @@ gaps.outer.right =      20
     alt-shift-k = ['join-with up', 'mode main']
     alt-shift-l = ['join-with right', 'mode main']
 
-# Refresh the focused workspace's SketchyBar box whenever a new window
-# shows up in it (opening an app doesn't fire exec-on-workspace-change).
-# Must stay at the end of the file — a [[table]] header this early would
-# swallow every later top-level key as belonging to it.
+# Refresh SketchyBar's workspace boxes whenever a new window shows up
+# (opening an app doesn't fire exec-on-workspace-change). Must stay at the
+# end of the file — a [[table]] header this early would swallow every
+# later top-level key as belonging to it.
 [[on-window-detected]]
 if = 'true'
-run = ['exec-and-forget /bin/bash -c "$HOME/.config/sketchybar/plugins/aerospace.sh $(aerospace list-workspaces --focused)"']
+run = ['exec-and-forget sketchybar --trigger aerospace_refresh']

@@ -45,10 +45,13 @@ sketchybar --add item apple left \
 ##### Workspaces (AeroSpace) #####
 # Only workspaces with open windows are shown (Brave is ignored — it lives
 # on a real macOS Space, not an AeroSpace workspace). The focused one is
-# highlighted with an animated background. Switching workspaces and opening
-# new windows refresh instantly via AeroSpace hooks (see .aerospace.toml);
-# update_freq is just a safety net that catches closed apps/windows, which
-# AeroSpace has no hook for.
+# highlighted with an animated background.
+#
+# All 9 boxes are refreshed together, atomically, by one hidden controller
+# item (below) that reads AeroSpace's state once per event and updates
+# everything from that single consistent snapshot. Querying each box
+# separately (the previous approach) could catch AeroSpace mid-switch and
+# show a torn state for a moment.
 MAX_APPS_PER_SPACE=4
 
 for sid in $(aerospace list-workspaces --all); do
@@ -61,9 +64,7 @@ for sid in $(aerospace list-workspaces --all); do
     label.drawing=off \
     padding_left=0 \
     padding_right=0 \
-    update_freq=5 \
-    click_script="aerospace workspace $sid" \
-    script="$PLUGIN_DIR/aerospace.sh $sid"
+    click_script="aerospace workspace $sid"
 
   bracket_members="space.$sid"
   for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
@@ -102,6 +103,14 @@ done
 sketchybar --add item space_separator left \
   --set space_separator icon="|" icon.font="SF Pro:Regular:13.0" icon.color=$SURFACE_DIM label.drawing=off \
   padding_left=6 padding_right=10
+
+# Hidden controller: does the actual AeroSpace querying and updates every
+# workspace box in one atomic pass. Triggered by AeroSpace hooks (workspace
+# switch, new window) — see .aerospace.toml — plus a periodic poll as a
+# safety net for closed apps, which AeroSpace has no hook for.
+sketchybar --add item aerospace_controller left \
+  --set aerospace_controller drawing=off update_freq=5 script="$PLUGIN_DIR/aerospace.sh" \
+  --subscribe aerospace_controller aerospace_refresh
 
 ##### Front app (currently focused app's real icon + name) #####
 # Hidden while Brave is focused — Brave lives on a real macOS Space, not an
