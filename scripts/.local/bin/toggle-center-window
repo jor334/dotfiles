@@ -1,11 +1,15 @@
 #!/bin/bash
-# Toggles the focused window between tiling and floating+centered.
+# Toggles ALL windows in the focused workspace between tiling and floating.
+# Direction is decided by the currently focused window's layout.
 
-layout=$(aerospace list-windows --focused --format '%{window-layout}')
+focused_layout=$(aerospace list-windows --focused --format '%{window-layout}')
 
-if [ "$layout" = "floating" ]; then
-  aerospace layout tiling
+if [ "$focused_layout" = "floating" ]; then
+  target="tiling"
 else
-  aerospace layout floating
-  /Users/jj/.local/bin/center-window
+  target="floating"
 fi
+
+aerospace list-windows --workspace focused --format '%{window-id}' | while read -r id; do
+  aerospace layout "$target" --window-id "$id"
+done
