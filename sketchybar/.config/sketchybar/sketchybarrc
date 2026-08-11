@@ -45,12 +45,10 @@ sketchybar --add item apple left \
 ##### Workspaces (AeroSpace) #####
 # Only workspaces with open windows are shown (Brave is ignored — it lives
 # on a real macOS Space, not an AeroSpace workspace). The focused one is
-# highlighted with an animated background.
-sketchybar --add event aerospace_workspace_change
-
-# Max number of per-app icons shown inside each workspace pill. The items
-# are pre-created hidden and toggled on/off by aerospace.sh as windows come
-# and go, instead of being added/removed dynamically.
+# highlighted with an animated background. Switching workspaces and opening
+# new windows refresh instantly via AeroSpace hooks (see .aerospace.toml);
+# update_freq is just a safety net that catches closed apps/windows, which
+# AeroSpace has no hook for.
 MAX_APPS_PER_SPACE=4
 
 for sid in $(aerospace list-workspaces --all); do
@@ -63,9 +61,9 @@ for sid in $(aerospace list-workspaces --all); do
     label.drawing=off \
     padding_left=0 \
     padding_right=0 \
+    update_freq=5 \
     click_script="aerospace workspace $sid" \
-    script="$PLUGIN_DIR/aerospace.sh $sid" \
-    --subscribe space.$sid aerospace_workspace_change
+    script="$PLUGIN_DIR/aerospace.sh $sid"
 
   bracket_members="space.$sid"
   for slot in $(seq 0 $((MAX_APPS_PER_SPACE - 1))); do
