@@ -13,7 +13,7 @@ after-startup-command = []
 # Refresh only the two SketchyBar workspace boxes that actually changed
 # (the one we left, the one we entered) instead of broadcasting to all
 # nine — keeps the highlight animation smooth.
-exec-on-workspace-change = ['/bin/bash', '-c', '$HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_PREV_WORKSPACE; $HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_FOCUSED_WORKSPACE']
+exec-on-workspace-change = ['/bin/bash', '-c', '$HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_PREV_WORKSPACE & $HOME/.config/sketchybar/plugins/aerospace.sh $AEROSPACE_FOCUSED_WORKSPACE & wait']
 
 # Start AeroSpace at login
 start-at-login = false
