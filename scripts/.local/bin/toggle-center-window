@@ -1,0 +1,11 @@
+#!/bin/bash
+# Toggles the focused window between tiling and floating+centered.
+
+layout=$(aerospace list-windows --focused --format '%{window-layout}')
+
+if [ "$layout" = "floating" ]; then
+  aerospace layout tiling
+else
+  aerospace layout floating
+  /Users/jj/.local/bin/center-window
+fi
